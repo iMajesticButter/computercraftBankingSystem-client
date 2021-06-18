@@ -14,10 +14,11 @@ local NETWORK_BKRESPONSE = "NETWORK_BKRESPONSE"; -- response to client
 local NETWORK_ADDUSERDAT = "NETWORK_ADDUSERDAT"; -- add a new user to the database
 local NETWORK_ISAUTHUSER = "NETWORK_ISAUTHUSER"; -- check if the users credentials are correct, sends back a boolean
 local NETWORK_GETBALANCE = "NETWORK_GETBALANCE"; -- gets users balance, requires auth
-local NETWORK_ADDBALANCE = "NETWORK_ADDBALANCE"; -- adds to users balance, requires auth
-local NETWORK_SUBBALANCE = "NETWORK_SUBBALANCE"; -- subtracts from users balance, requires auth
+local NETWORK_MODBALANCE = "NETWORK_MODBALANCE"; -- adds/subtracts from users balance, requires auth
 local NETWORK_ADDADDRESS = "NETWORK_ADDADDRESS"; -- add an address that is authorized to do ATM stuff, requires a special password
 local NETWORK_ISAUTHADDR = "NETWORK_ISAUTHADDR"; -- ask if address is authed
+local NETWORK_CHARGENEAL = "NETWORK_CHARGENEAL"; -- charge user for somthing (can only be used to remove money so requires less authorization) in future may swap this out for a wire transfer
+local NETWORK_CHARGERAIL = "NETWORK_CHARGERAIL"; -- charge user for railway fair
 
 function connect()
 	print("connecting to server");
@@ -64,6 +65,126 @@ function addAuthAddress(password)
 			print("result: " .. msg);
 		end
 	end
+end
 
+-- returns a boolean
+function addNewUser(name, password)
+
+	local dat = {};
+	dat.type = NETWORK_ADDUSERDAT;
+	dat.name = name;
+	dat.pass = password;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
+end
+
+-- returns a boolean
+function checkUserCredentials(name, password) 
+
+	local dat = {};
+	dat.type = NETWORK_ISAUTHUSER;
+	dat.name = name;
+	dat.pass = password;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
+
+end
+
+-- returns a table containing .auth and .bal
+function getUserBalance(name, password)
+
+	local dat = {};
+	dat.type = NETWORK_GETBALANCE;
+	dat.name = name;
+	dat.pass = password;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	end
+	return msg;
+end
+
+-- returns a boolean
+function addBalance(name, password, ammount) 
+
+	local dat = {};
+	dat.type = NETWORK_MODBALANCE;
+	dat.name = name;
+	dat.pass = password;
+	dat.val = ammount;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
+
+end
+
+-- returns a boolean
+function subBalance(name, password, ammount)
+	return addBalance(name, password, -ammount);
+end
+
+-- returns a boolean
+function isAuthAddr()
+	local dat = {};
+	dat.type = NETWORK_ISAUTHADDR;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
+end
+
+-- returns a boolean
+function chargeRailFair(name, password) 
+
+	local dat = {};
+	dat.type = NETWORK_CHARGERAIL;
+	dat.name = name;
+	dat.pass = password;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
 
 end
