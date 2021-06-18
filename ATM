@@ -55,7 +55,12 @@ local function giveKeycard(name, password)
 end
 
 local function newAccountInterface()
-
+	if not s_modem.connect(address, 4) then
+		print("ERROR: Timed out...");
+		sleep(1);
+		clearScreen();
+		return;
+	end
 	if not floppyDrive.isDiskPresent() then
 		print("ERROR: Out of floppy drives!");
 		sleep(10);
@@ -215,6 +220,13 @@ end
 
 local function login(name, password)
 	clearScreen();
+
+	if not s_modem.connect(address, 4) then
+		print("ERROR: Timed out...");
+		sleep(1);
+		clearScreen();
+		return;
+	end
 
 	print("Attempting to log into account: " .. name);
 	sleep(0.5);
