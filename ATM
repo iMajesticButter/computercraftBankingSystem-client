@@ -41,7 +41,7 @@ local function giveKeycard(name, password)
 
 	sleep(1);
 
-	floppyDrive.setDiskLabel("Official Krusty Krab Bank Card: " .. name);
+	floppyDrive.setDiskLabel("Official Krusty Card: " .. name);
 
 	print("ejecting card");
 	floppyDrive.ejectDisk();
