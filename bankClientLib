@@ -2,7 +2,7 @@ local ecnet = require("ecnet");
 
 local ADDRESS_CHANNEL = 25783;
 local RESPONSE_CHANNEL = 25787;
-local modem = peripheral.find(modem);
+local modem = peripheral.find("modem");
 local s_modem = ecnet.wrap(modem);
 
 local address = ""
