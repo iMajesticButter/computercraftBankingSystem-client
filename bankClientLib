@@ -10,21 +10,26 @@ local address = ""
 local connected = false
 
 function connect()
--- attemt to connect loop
+	print("connecting to server");
+	-- attemt to connect loop
 	while not connected do
+		print("getting server address");
 		-- ask the broadcast channel what the bank server address is
 		modem.transmit(ADDRESS_CHANNEL, RESPONSE_CHANNEL, "DNS_REQ BANK");
 		modem.open(RESPONSE_CHANNEL);
 		local _, __, ___, ____, address, ______ = os.pullEvent("modem_message");
 		modem.close(RESPONSE_CHANNEL);
+		print("address recieved: " .. address);
 
 		connected = s_modem.connect(address, 3);
 	end
+	print("connected to server");
 	-- we should be connected to the server now
 end
 
 -- testing
 connect();
 while true do
+	print("send test over secure connection");
 	s_modem.send(address, "test");
 end
