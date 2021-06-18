@@ -158,7 +158,7 @@ end
 local function loginKeycard()
 	term.clear();
 	print("Reading keycard");
-	if disk.isPresent("bottom");
+	if disk.isPresent("bottom") then
 		local mountPath = disk.getMountPath("bottom");
 
 		local path = mountPath .. KEYCARD_DATA_FILENAME;
