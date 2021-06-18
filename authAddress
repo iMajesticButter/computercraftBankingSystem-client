@@ -1,12 +1,12 @@
 os.loadAPI("hash");
-local bank = require("bankClientLib");
+require("bankClientLib");
 
 local NETWORK_ADDADDRESS = "NETWORK_ADDADDRESS"; -- add an address that is authorized to do ATM stuff, requires a special password
 
-bank.connect();
+connect();
 
 print("Enter Admin Password: ");
 
 local pass = hash.hash(read());
 
-bank.addAuthAddress(pass);
+addAuthAddress(pass);
