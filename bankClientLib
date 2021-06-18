@@ -188,3 +188,19 @@ function chargeRailFair(name, password)
 	return false;
 
 end
+
+-- generates a random password
+function genPassword()
+
+	all = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}:',.<>/?=+-_!@#$%^&*()\\|[];"
+
+	pass = ""
+
+	for i = 1, 25 do
+		r = math.random(#all);
+		pass = pass.. string.sub(all, r, r);
+	end
+
+	return pass;
+
+end

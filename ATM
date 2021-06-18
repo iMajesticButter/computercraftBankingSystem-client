@@ -1,0 +1,211 @@
+require("bankClientLib");
+os.loadAPI("hash");
+-- change these variables to match peripheral names for this atm
+
+-- make sure we are connecting over the motem so we can transfer items
+local function netFilter(name)
+	if name:find("_", 1, true) then
+		return true;
+	end
+	return false;
+end
+
+local KEYCARD_DATA_FILENAME = "/keycardData";
+
+local inputChest = peripheral.find("minecraft:barrel", netFilter);
+local outputChest = peripheral.find("minecraft:chest", netFilter);
+local floppyDrive = peripheral.find("drive", netFilter);
+local cardSwiper = peripheral.wrap("bottom");
+
+-- floppyDrive.isDiskPresent();
+-- floppyDrive.ejectDisk();
+-- floppyDrive.setDiskLabel();
+-- floppyDrive.getMountPath();
+
+local function giveKeycard(name, password)
+	if not floppyDrive.isDiskPresent() then
+		print("ERROR: Out of floppy drives!");
+		sleep(10);
+		term.clear();
+		return;
+	end
+
+	local mountPath = floppyDrive.getMountPath();
+	local dataPath = mountPath .. KEYCARD_DATA_FILENAME;
+
+	print("flashing card data");
+	local file = fs.open(dataPath, "w");
+	file.writeLine(name);
+	file.writeLine(password);
+	file.close();
+
+	sleep(1);
+
+	floppyDrive.setDiskLabel("Official Krusty Krab Bank Card");
+
+	print("ejecting card");
+	floppyDrive.ejectDisk();
+
+	sleep(1);
+end
+
+local function newAccountInterface()
+
+	if not floppyDrive.isDiskPresent() then
+		print("ERROR: Out of floppy drives!");
+		sleep(10);
+		term.clear();
+		return;
+	end
+
+	local name = "";
+	local pass = "";
+
+	local accountCreated = false;
+	for i = 1, 3 do
+
+		term.clear();
+
+		print("Enter a name for the account");
+		name = read();
+
+		print("Enter a password for the account");
+		print("This will be used in the event that you lose your keycard");
+		pass = read("*");
+
+		print("Please Re-Type the password");
+		local pass2 = read("*");
+
+		if pass ~= pass2 then
+			print("The passwords do not match, please try again!");
+			sleep(2);
+			term.clear();
+		else
+			if addNewUser(name, hash.hash(pass)) then
+				accountCreated = true;
+			end
+		end
+	end
+
+	if not accountCreated then
+		print("Faild to create account");
+		sleep(2);
+		term.clear();
+		return;
+	end
+
+	term.clear();
+	print("Account created, Creating Keycard...");
+	print("Please try not to lose it");
+
+	sleep(1);
+
+	giveKeycard(name, hash.hash(pass));
+
+	term.clear();
+
+	print("Thank you! Come Again!");
+	sleep(1);
+
+	term.clear();
+
+end
+
+local function loggedInInterface(name, password)
+
+	term.clear();
+	print("you are logged in");
+
+	sleep(10);
+
+	print("you are logging out");
+
+end
+
+local function login(name, password)
+	term.clear();
+
+	print("Attempting to log into account: " .. name);
+	sleep(0.5);
+
+	if checkUserCredentials(name, password) then
+		print("Login sucsessfull!");
+		sleep(0.5);
+		term.clear();
+		loggedInInterface(name, password);
+	else
+		print("Login failed: bad credentials!");
+		sleep(2);
+		term.clear();
+		return;
+	end
+
+end
+
+local function loginInterface()
+	term.clear();
+
+	print("Enter account name: ");
+	local name = read();
+
+	print("Enter account password: ");
+	local pass = read("*");
+
+	term.clear();
+	login(name, hash.hash(password));
+end
+
+local function loginKeycard()
+	term.clear();
+	print("Reading keycard");
+	if disk.isPresent("bottom");
+		local mountPath = disk.getMountPath("bottom");
+
+		local path = mountPath .. KEYCARD_DATA_FILENAME;
+
+		print("Keycard found, parsing");
+
+		local file = fs.open(path, "r");
+		local name = file.readLine();
+		local pass = file.readLine();
+		file.close();
+
+		disk.eject("bottom");
+
+		print("Keycard read sucsessfull, logging in...");
+		term.clear();
+		login(name, pass);
+
+	else
+		print("Failed to read keycard!");
+		sleep(2);
+		term.clear();
+		return;
+	end
+end
+
+connect();
+
+while true do
+	-- draw main page ui
+	term.clear();
+	print("1: create new account");
+	print("2: login to exising account with password")
+
+	local event, a1, a2 = os.pullEvent();
+	if event == "disk" then
+		if a1 == "bottom" then
+			-- attempt keycard swipe
+			loginKeycard();
+		end
+	elseif event == "key" then
+		if not a2 then
+			local k = keys.getName(a1);
+			if k == "one" then
+				newAccountInterface();
+			elseif k == "two" then
+				loginInterface();
+			end
+		end
+	end
+end
