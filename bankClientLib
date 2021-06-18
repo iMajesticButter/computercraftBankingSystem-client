@@ -10,6 +10,7 @@ local address = "none"
 local connected = false
 
 -- value of dat.type
+local NETWORK_BKRESPONSE = "NETWORK_BKRESPONSE"; -- response to client
 local NETWORK_ADDUSERDAT = "NETWORK_ADDUSERDAT"; -- add a new user to the database
 local NETWORK_ISAUTHUSER = "NETWORK_ISAUTHUSER"; -- check if the users credentials are correct, sends back a boolean
 local NETWORK_GETBALANCE = "NETWORK_GETBALANCE"; -- gets users balance, requires auth
@@ -48,5 +49,21 @@ function addAuthAddress(password)
 	dat.type = NETWORK_ADDADDRESS;
 	dat.pass = password;
 	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 5);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			if msg then
+				print("success!");
+			else
+				print("failed to authenticate!");
+			end
+		else
+			print("result: " .. msg);
+		end
+	end
+
 
 end
