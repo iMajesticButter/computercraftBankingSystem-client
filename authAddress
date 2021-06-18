@@ -9,3 +9,4 @@ print("Enter Admin Password: ");
 
 local pass = hash.hash(read());
 
+bank.addAuthAddress(pass);
