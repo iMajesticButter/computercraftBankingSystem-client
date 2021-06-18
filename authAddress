@@ -7,6 +7,6 @@ connect();
 
 print("Enter Admin Password: ");
 
-local pass = hash.hash(read());
+local pass = hash.hash(read("*"));
 
 addAuthAddress(pass);
