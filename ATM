@@ -178,7 +178,7 @@ local function loggedInInterface(name, password)
 				term.clear();
 				print("logged in to: " .. name);
 				print("account balance: " .. balance .. " diamonds")
-				print("1. deposite");
+				print("1. deposit");
 				print("2. print new card");
 				print("3. log out");
 
