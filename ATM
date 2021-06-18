@@ -24,7 +24,7 @@ local cardSwiper = peripheral.wrap("bottom");
 
 local function clearScreen()
 	term.clear();
-	term.setCursorPos(0, 0);
+	term.setCursorPos(0, 1);
 end
 
 local function giveKeycard(name, password)
