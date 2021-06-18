@@ -5,7 +5,7 @@ local RESPONSE_CHANNEL = 25787;
 local modem = peripheral.find("modem");
 local s_modem = ecnet.wrap(modem);
 
-local address = ""
+local address = "none"
 
 local connected = false
 
@@ -17,7 +17,14 @@ function connect()
 		-- ask the broadcast channel what the bank server address is
 		modem.transmit(ADDRESS_CHANNEL, RESPONSE_CHANNEL, "DNS_REQ BANK");
 		modem.open(RESPONSE_CHANNEL);
-		local _, __, ___, ____, address, ______ = os.pullEvent("modem_message");
+		parallel.waitForAny(function()
+			local _, __, ___, ____, address, ______ = os.pullEvent("modem_message");
+		end, 
+		function()
+			sleep(3);
+			print("timed out");
+		end)
+		
 		modem.close(RESPONSE_CHANNEL);
 		print("address recieved: " .. address);
 
