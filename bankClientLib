@@ -18,11 +18,10 @@ function connect()
 		modem.transmit(ADDRESS_CHANNEL, RESPONSE_CHANNEL, "DNS_REQ BANK");
 		modem.open(RESPONSE_CHANNEL);
 		parallel.waitForAny(function()
-			local _, __, ___, ____, address, ______ = os.pullEvent("modem_message");
+			_, __, ___, ____, address, ______ = os.pullEvent("modem_message");
 		end, 
 		function()
 			sleep(3);
-			print("timed out");
 		end)
 		
 		modem.close(RESPONSE_CHANNEL);
