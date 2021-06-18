@@ -193,6 +193,8 @@ while true do
 	print("1: create new account");
 	print("2: login to exising account with password")
 
+
+
 	local event, a1, a2 = os.pullEvent();
 	if event == "disk" then
 		if a1 == "bottom" then
@@ -200,6 +202,7 @@ while true do
 			loginKeycard();
 		end
 	elseif event == "key" then
+		os.pullEvent("char") -- get rid of the char event
 		if not a2 then
 			local k = keys.getName(a1);
 			if k == "one" then
