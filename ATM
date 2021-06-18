@@ -226,7 +226,8 @@ local function login(name, password)
 		loggedInInterface(name, password);
 	else
 		print("Login failed: bad credentials!");
-		sleep(2);
+		s_modem.connect(address, 4);
+		sleep(0.5);
 		term.clear();
 		return;
 	end
