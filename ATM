@@ -138,10 +138,11 @@ local function depositeInterface(name, password)
 	end
 
 	print("found " .. dcount .. " diamonds, depositing...");
+	sleep(0.5);
 	-- adjust user balance
 
 	addBalance(name, password, dcount);
-
+	sleep(1.5);
 
 end
 
