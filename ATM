@@ -164,6 +164,7 @@ local function loggedInInterface(name, password)
 			end
 			term.clear();
 			print("Logging out due to inactivity...");
+			sleep(1);
 		end, 
 		function()
 			while true do
