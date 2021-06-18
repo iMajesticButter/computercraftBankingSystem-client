@@ -1,0 +1,30 @@
+local ecnet = require("ecnet");
+
+local ADDRESS_CHANNEL = 25783;
+local RESPONSE_CHANNEL = 25787;
+local modem = peripheral.find(modem);
+local s_modem = ecnet.wrap(modem);
+
+local address = ""
+
+local connected = false
+
+function connect()
+-- attemt to connect loop
+	while not connected do
+		-- ask the broadcast channel what the bank server address is
+		modem.transmit(ADDRESS_CHANNEL, RESPONSE_CHANNEL, "DNS_REQ BANK");
+		modem.open(RESPONSE_CHANNEL);
+		local _, __, ___, ____, address, ______ = os.pullEvent("modem_message");
+		modem.close(RESPONSE_CHANNEL);
+
+		connected = s_modem.connect(address, 3);
+	end
+	-- we should be connected to the server now
+end
+
+-- testing
+connect();
+while true do
+	s_modem.send(address, "test");
+end
