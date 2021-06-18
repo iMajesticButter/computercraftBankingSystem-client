@@ -290,6 +290,11 @@ end
 
 connect();
 
+if not isAuthAddr() then
+	print("This program requires bank authorization");
+	shell.run("/authAddress");
+end
+
 while true do
 	-- draw main page ui
 	clearScreen();

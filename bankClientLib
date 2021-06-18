@@ -20,6 +20,22 @@ local NETWORK_ISAUTHADDR = "NETWORK_ISAUTHADDR"; -- ask if address is authed
 local NETWORK_CHARGENEAL = "NETWORK_CHARGENEAL"; -- charge user for somthing (can only be used to remove money so requires less authorization) in future may swap this out for a wire transfer
 local NETWORK_CHARGERAIL = "NETWORK_CHARGERAIL"; -- charge user for railway fair
 
+-- generates a random password
+function genPassword()
+
+	all = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}:',.<>/?=+-_!@#$%^&*()\\|[];"
+
+	pass = ""
+
+	for i = 1, 25 do
+		r = math.random(#all);
+		pass = pass.. string.sub(all, r, r);
+	end
+
+	return pass;
+
+end
+
 function connect()
 	print("connecting to server");
 	-- attemt to connect loop
@@ -191,18 +207,3 @@ function chargeRailFair(name, password)
 
 end
 
--- generates a random password
-function genPassword()
-
-	all = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}:',.<>/?=+-_!@#$%^&*()\\|[];"
-
-	pass = ""
-
-	for i = 1, 25 do
-		r = math.random(#all);
-		pass = pass.. string.sub(all, r, r);
-	end
-
-	return pass;
-
-end
