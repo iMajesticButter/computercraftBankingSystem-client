@@ -41,7 +41,7 @@ local function giveKeycard(name, password)
 
 	sleep(1);
 
-	floppyDrive.setDiskLabel("Official Krusty Krab Bank Card");
+	floppyDrive.setDiskLabel("Official Krusty Krab Bank Card: " .. name);
 
 	print("ejecting card");
 	floppyDrive.ejectDisk();
@@ -112,14 +112,94 @@ local function newAccountInterface()
 
 end
 
+local function depositeInterface(name, password)
+
+	term.clear();
+
+	if not isAuthAddr() then
+		print("An error was encountered depositing items...");
+		sleep(0.5);
+		term.clear();
+		return;
+	end
+
+	print("put diamonds in barrel and press any key to continue...");
+
+	os.pullEvent("key");
+	os.pullEvent("char");
+
+	local dcount = 0;
+	-- count and move diamonds
+	for slot, item in pairs(inputChest.list()) do
+		if item.name == "minecraft:diamond" then
+			dcount = dcount + item.count;
+			inputChest.pushItems(peripheral.getName(outputChest), slot);
+		end
+	end
+
+	print("found " .. dcount .. " diamonds, depositing...");
+	-- adjust user balance
+
+	addBalance(name, password, dcount);
+
+
+end
+
 local function loggedInInterface(name, password)
 
 	term.clear();
-	print("you are logged in");
+	print("you are logged in to: " .. name);
 
-	sleep(10);
+	local timeoutTimerMax = 15
+	local timeoutTimer = timeoutTimerMax;
 
-	print("you are logging out");
+	local balance = 0;
+
+	parallel.waitForAny(
+		function()
+			-- inactivity timer
+			while timeoutTimer > 0 do
+				timeoutTimer = timeoutTimer - 1;
+				sleep(1);
+			end
+			term.clear();
+			print("Logging out due to inactivity...");
+		end, 
+		function()
+			while true do
+
+				local bal = getUserBalance(name, password);
+
+				if bal.auth then
+					balance = bal.bal;
+				end
+
+				term.clear();
+				print("logged in to: " .. name);
+				print("account balance: " .. balance .. " diamonds")
+				print("1. deposite");
+				print("2. print new card");
+
+				-- reset timer on keypresses
+				local event, key = os.pullEvent("key");
+				os.pullEvent("char");
+				timeoutTimer = timeoutTimerMax;
+				local k = keys.getName(key);
+
+				if k == "one" then
+					timeoutTimer = timeoutTimerMax * 4;
+					depositeInterface(name, password);
+					timeoutTimer = timeoutTimerMax;
+				elseif k == "two" then
+					timeoutTimer = timeoutTimerMax * 4;
+					giveKeycard(name, password);
+					timeoutTimer = timeoutTimerMax;
+				end
+
+			end
+		end)
+
+	print("Logging out...");
 
 end
 
