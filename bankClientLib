@@ -45,7 +45,7 @@ function connect()
 end
 
 function addAuthAddress(password)
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_ADDADDRESS;
 	dat.pass = password;
@@ -69,7 +69,7 @@ end
 
 -- returns a boolean
 function addNewUser(name, password)
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_ADDUSERDAT;
 	dat.name = name;
@@ -89,7 +89,7 @@ end
 
 -- returns a boolean
 function checkUserCredentials(name, password) 
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_ISAUTHUSER;
 	dat.name = name;
@@ -110,7 +110,7 @@ end
 
 -- returns a table containing .auth and .bal
 function getUserBalance(name, password)
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_GETBALANCE;
 	dat.name = name;
@@ -126,7 +126,7 @@ end
 
 -- returns a boolean
 function addBalance(name, password, ammount) 
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_MODBALANCE;
 	dat.name = name;
@@ -148,11 +148,13 @@ end
 
 -- returns a boolean
 function subBalance(name, password, ammount)
+	s_modem.connect(address, 4)
 	return addBalance(name, password, -ammount);
 end
 
 -- returns a boolean
 function isAuthAddr()
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_ISAUTHADDR;
 	s_modem.send(address, dat);
@@ -170,7 +172,7 @@ end
 
 -- returns a boolean
 function chargeRailFair(name, password) 
-
+	s_modem.connect(address, 4)
 	local dat = {};
 	dat.type = NETWORK_CHARGERAIL;
 	dat.name = name;
