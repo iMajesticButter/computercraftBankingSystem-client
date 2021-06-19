@@ -13,6 +13,8 @@ local connected = false
 local UPDATE_CHANNEL = 3618;
 local UPDATE_PASSHASH = "79b577d198b08557e89025d6e8ab48e5fb579f541debfe0acfcc34646c97acfc";
 
+KEYCARD_DATA_FILENAME = "/keycardData";
+
 -- value of dat.type
 local NETWORK_BKRESPONSE = "NETWORK_BKRESPONSE"; -- response to client
 local NETWORK_ADDUSERDAT = "NETWORK_ADDUSERDAT"; -- add a new user to the database
@@ -106,6 +108,21 @@ function startProgram(programFunction, preventExit, updateOnExit)
 		end
 	until not preventExit
 
+end
+
+function readKeycard(side)
+	local mountPath = disk.getMountPath(side);
+
+	local path = mountPath .. KEYCARD_DATA_FILENAME;
+
+	if fs.exists(path) then
+		local file = fs.open(path, "r");
+		local name = file.readLine();
+		local pass = file.readLine();
+		file.close();
+		return true, name, pass;
+	end
+	return false, nil, nil;
 end
 
 function addAuthAddress(password)

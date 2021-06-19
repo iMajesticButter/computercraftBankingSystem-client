@@ -9,8 +9,6 @@ local function netFilter(name)
 	return false;
 end
 
-local KEYCARD_DATA_FILENAME = "/keycardData";
-
 local inputChest = peripheral.find("minecraft:barrel", netFilter);
 local outputChest = peripheral.find("minecraft:chest", netFilter);
 local floppyDrive = peripheral.find("drive", netFilter);
@@ -334,23 +332,13 @@ local function loginKeycard()
 	clearScreen();
 	print("Reading keycard");
 	if disk.isPresent("bottom") then
-		local mountPath = disk.getMountPath("bottom");
-
-		local path = mountPath .. KEYCARD_DATA_FILENAME;
-
-		print("Keycard found, parsing");
-
-		local file = fs.open(path, "r");
-		local name = file.readLine();
-		local pass = file.readLine();
-		file.close();
-
+		local result, name, pass = readKeycard("bottom");
 		disk.eject("bottom");
-
-		print("Keycard read sucsessfull, logging in...");
-		clearScreen();
-		login(name, pass);
-
+		if result then
+			print("Keycard read sucsessfull, logging in...");
+			clearScreen();
+			login(name, pass);
+		end
 	else
 		print("Failed to read keycard!");
 		sleep(2);

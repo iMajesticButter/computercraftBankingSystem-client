@@ -1,0 +1,45 @@
+require("bankClientLib");
+
+-- default config, can be changed in config file
+local REDSTONE_SIDE = "back";
+local REDSTONE_DURATION = 1.5;
+local PRICE_TAG = "TRAIN_FARE";
+
+local CONFIG_FILE = "/config";
+
+if not fs.exists(CONFIG_FILE) then
+	local file = fs.open(CONFIG_FILE, "w");
+	file.writeLine(REDSTONE_SIDE);
+	file.writeLine(REDSTONE_DURATION);
+	file.writeLine(PRICE_TAG);
+	file.close();
+else
+	local file = fs.open(CONFIG_FILE, "r");
+	REDSTONE_SIDE = file.readLine();
+	REDSTONE_DURATION = file.readLine();
+	PRICE_TAG = file.readLine();
+	file.close();
+end
+
+redstone.setOutput(REDSTONE_SIDE, false);
+
+function programMain()
+	while true do
+		local event, side = os.pullEvent("disk");
+		-- drive inserted
+		local result, name, pass = readKeycard(side);
+		disk.eject(side);
+
+		if result then
+			-- attempt to charge the user
+			if chargePrice(name, pass, PRICE_TAG) then
+				-- send redstone signal
+				redstone.setOutput(REDSTONE_SIDE, true);
+				sleep(REDSTONE_DURATION);
+				redstone.setOutput(REDSTONE_SIDE, false);
+			end
+		end
+	end
+end
+
+startProgram(programMain, false, false);
