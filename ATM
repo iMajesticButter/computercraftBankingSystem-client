@@ -301,6 +301,7 @@ local function loggedInInterface(name, password)
 					print("press any key to continue...");
 					os.pullEvent("key");
 					os.pullEvent("char");
+					generalChime()
 					timeoutTimer = timeoutTimerMax;
 				elseif k == "six" then
 					break;
