@@ -30,11 +30,13 @@ end
 
 local function checkForUpdates()
 	while true do
-		local sender, msg = s_modem.receive(address, 0.15);
+		local event, modemSide, senderChannel, replyChannel, message, distance = os.pullEvent("modem_message");
 
-		if type(msg) == "string" then
-			if hash.hash(msg) == UPDATE_PASSHASH then
-				shell.run("/install");
+		if senderChannel == UPDATE_CHANNEL then
+			if type(msg) == "string" then
+				if hash.hash(msg) == UPDATE_PASSHASH then
+					shell.run("/install");
+				end
 			end
 		end
 	end
