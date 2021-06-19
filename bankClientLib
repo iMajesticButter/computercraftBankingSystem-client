@@ -62,7 +62,16 @@ function genPassword()
 
 end
 
-function startProgram(programFunction, allowExit)
+function startProgram(programFunction, allowExit, updateOnExit)
+
+	if allowExit == nil then
+		allowExit = false;
+	end
+
+	if updateOnExit == nil then
+		updateOnExit = false;
+	end
+
 	print("connecting to server");
 	-- attemt to connect loop
 	while not connected do
@@ -86,10 +95,12 @@ function startProgram(programFunction, allowExit)
 	-- we should be connected to the server now
 
 	-- program
-	pcall(parallel.waitForAny, checkForUpdates, programFunction);
-	-- program ended, treat this as an update request if allow exit is false
-	if not allowExit then
-		shell.run("/install");
+	while not allowExit do
+		pcall(parallel.waitForAny, checkForUpdates, programFunction);
+		-- program ended, treat this as an update request if allow exit is false
+		if updateOnExit then
+			pcall(shell.run("/install"));
+		end
 	end
 
 end
