@@ -96,16 +96,17 @@ function startProgram(programFunction)
 	-- we should be connected to the server now
 
 	-- program
-	parallel.waitForAny(
-		function()
-			blockTerminate();
-		end,
-		function()
-			checkForUpdates();
-		end,
-		function()
-			programFunction();
-		end);
+	pcall(parallel.waitForAny, blockTerminate, checkForUpdates, programFunction);
+	--parallel.waitForAny(
+	--	function()
+	--		blockTerminate();
+	--	end,
+	--	function()
+	--		checkForUpdates();
+	--	end,
+	--	function()
+	--		programFunction();
+	--	end);
 
 end
 
