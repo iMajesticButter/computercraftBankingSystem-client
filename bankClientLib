@@ -30,7 +30,7 @@ end
 
 local function checkForUpdates()
 	while true do
-		local sender, msg = s_modem.receive(address);
+		local sender, msg = s_modem.receive(address, 0.15);
 
 		if type(msg) == "string" then
 			if hash.hash(msg) == UPDATE_PASSHASH then
@@ -46,17 +46,12 @@ local coUpdate = coroutine.create(checkForUpdates);
 function coroutine.yield(sFilter)
 	while true do
 		local event = { oldYield() };
-		parallel.waitForAll(
-			function()
-				if coroutine.status(coUpdate) == "suspended" then
-					coroutine.resume(coUpdate, unpack(event));
-				end
-			end,
-			function()
-				if sFilter == event[1] or not sFilter then
-					return unpack(event);
-				end
-			end);
+		if coroutine.status(coUpdate) == "suspended" then
+			coroutine.resume(coUpdate, unpack(event));
+		end
+		if sFilter == event[1] or not sFilter then
+			return unpack(event);
+		end
 	end
 end
 
