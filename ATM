@@ -140,8 +140,7 @@ local function depositeInterface(name, password)
 	-- count and move diamonds
 	for slot, item in pairs(inputChest.list()) do
 		if item.name == "minecraft:diamond" then
-			dcount = dcount + item.count;
-			inputChest.pushItems(peripheral.getName(outputChest), slot);
+			dcount = dcount + inputChest.pushItems(peripheral.getName(outputChest), slot);
 		end
 	end
 
