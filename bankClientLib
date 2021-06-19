@@ -62,10 +62,10 @@ function genPassword()
 
 end
 
-function startProgram(programFunction, allowExit, updateOnExit)
+function startProgram(programFunction, preventExit, updateOnExit)
 
-	if allowExit == nil then
-		allowExit = false;
+	if preventExit == nil then
+		preventExit = false;
 	end
 
 	if updateOnExit == nil then
@@ -95,7 +95,7 @@ function startProgram(programFunction, allowExit, updateOnExit)
 	-- we should be connected to the server now
 
 	-- program
-	while not allowExit do
+	while not preventExit do
 		pcall(parallel.waitForAny, checkForUpdates, programFunction);
 		-- program ended, treat this as an update request if allow exit is false
 		if updateOnExit then
