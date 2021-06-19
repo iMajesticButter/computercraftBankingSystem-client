@@ -1,4 +1,5 @@
 require("bankClientLib");
+require("chime");
 -- change these variables to match peripheral names for this atm
 
 -- make sure we are connecting over the motem so we can transfer items
@@ -48,6 +49,7 @@ local function giveKeycard(name, password)
 
 	print("ejecting card");
 	floppyDrive.ejectDisk();
+	positiveChime();
 
 	sleep(1);
 end
@@ -55,12 +57,14 @@ end
 local function newAccountInterface()
 	if not s_modem.connect(address, 4) then
 		print("ERROR: Timed out...");
+		negetiveChime();
 		sleep(1);
 		clearScreen();
 		return;
 	end
 	if not floppyDrive.isDiskPresent() then
 		print("ERROR: Out of floppy drives!");
+		negetiveChime();
 		sleep(10);
 		clearScreen();
 		return;
@@ -76,16 +80,20 @@ local function newAccountInterface()
 
 		print("Enter a name for the account");
 		name = read();
+		inputChime();
 
 		print("Enter a password for the account");
 		print("This will be used in the event that you lose your keycard");
 		pass = read("*");
+		inputChime();
 
 		print("Please Re-Type the password");
 		local pass2 = read("*");
+		inputChime();
 
 		if pass ~= pass2 then
 			print("The passwords do not match, please try again!");
+			negetiveChime();
 			sleep(2);
 			clearScreen();
 		else
@@ -100,12 +108,14 @@ local function newAccountInterface()
 		print("Faild to create account");
 		sleep(2);
 		clearScreen();
+		negetiveChime();
 		return;
 	end
 
 	clearScreen();
 	print("Account created, Creating Keycard...");
 	print("Please try not to lose it");
+	positiveChime();
 
 	sleep(1);
 
@@ -128,6 +138,7 @@ local function depositeInterface(name, password)
 		print("An error was encountered depositing items...");
 		sleep(0.5);
 		clearScreen();
+		negetiveChime()
 		return;
 	end
 
@@ -135,6 +146,8 @@ local function depositeInterface(name, password)
 
 	os.pullEvent("key");
 	os.pullEvent("char");
+
+	inputChime();
 
 	local dcount = 0;
 	-- count and move diamonds
@@ -148,7 +161,11 @@ local function depositeInterface(name, password)
 	sleep(0.5);
 	-- adjust user balance
 
-	addBalance(name, password, dcount);
+	if addBalance(name, password, dcount) then
+		positiveChime()
+	else
+		negetiveChime()
+	end
 	sleep(1.5);
 
 end
@@ -172,6 +189,7 @@ local function loggedInInterface(name, password)
 			end
 			clearScreen();
 			print("Logging out due to inactivity...");
+			generalChime()
 			sleep(1);
 		end, 
 		function()
@@ -195,6 +213,7 @@ local function loggedInInterface(name, password)
 
 				-- reset timer on keypresses
 				local event, key = os.pullEvent("key");
+				generalChime()
 				os.pullEvent("char");
 				timeoutTimer = timeoutTimerMax;
 				local k = keys.getName(key);
@@ -211,6 +230,7 @@ local function loggedInInterface(name, password)
 					print("your current balance is: " .. balance .. " diamonds");
 
 					local ammount = tonumber(read());
+					inputChime();
 					if ammount <= 192 then
 						print("withdrawing " .. ammount .. " diamonds");
 						sleep(1);
@@ -224,9 +244,11 @@ local function loggedInInterface(name, password)
 
 							clearScreen();
 							print("sucsess! you may retrieve your diamonds from the barrel.");
+							positiveChime()
 						else
 							clearScreen();
 							print("failed to withdraw items...");
+							negetiveChime()
 						end
 
 						sleep(1);
@@ -234,6 +256,7 @@ local function loggedInInterface(name, password)
 					else
 						clearScreen();
 						print("you may only withdraw a maximum of 192 diamonds at a time...");
+						negetiveChime()
 						sleep(1);
 					end
 
@@ -243,12 +266,14 @@ local function loggedInInterface(name, password)
 					clearScreen();
 					print("what account would you like to transfer to?");
 					local otherAccount = read();
+					inputChime();
 					timeoutTimer = timeoutTimerMax * 4;
 					
 					clearScreen();
 					print("how many diamonds do you want to transfer?");
 					print("balance: " .. balance .. " diamonds");
 					local ammount = tonumber(read());
+					inputChime();
 					timeoutTimer = timeoutTimerMax * 4;
 					clearScreen();
 
@@ -257,9 +282,11 @@ local function loggedInInterface(name, password)
 					if wireTransfer(name, password, otherAccount, ammount) then
 						clearScreen();
 						print("transfer sucsessfull!");
+						positiveChime();
 					else
 						clearScreen();
 						print("transfer failed...");
+						negetiveChime();
 					end
 					sleep(1);
 
@@ -301,11 +328,13 @@ local function login(name, password)
 
 	if checkUserCredentials(name, password) then
 		print("Login sucsessfull!");
+		positiveChime()
 		sleep(0.5);
 		clearScreen();
 		loggedInInterface(name, password);
 	else
 		print("Login failed: bad credentials!");
+		negetiveChime()
 		s_modem.connect(address, 4);
 		sleep(0.5);
 		clearScreen();
@@ -360,6 +389,7 @@ function programMain()
 		print("2: login to exising account with password")
 
 		local event, a1, a2 = os.pullEvent();
+		generalChime()
 		if event == "disk" then
 			if a1 == "bottom" then
 				-- attempt keycard swipe

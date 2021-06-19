@@ -1,4 +1,5 @@
 require("bankClientLib");
+require("chime");
 
 -- default config, can be changed in config file
 local REDSTONE_SIDE = "back";
@@ -33,10 +34,13 @@ function programMain()
 		if result then
 			-- attempt to charge the user
 			if chargePrice(name, pass, PRICE_TAG) then
+				positiveChime();
 				-- send redstone signal
 				redstone.setOutput(REDSTONE_SIDE, true);
 				sleep(REDSTONE_DURATION);
 				redstone.setOutput(REDSTONE_SIDE, false);
+			else
+				negetiveChime();
 			end
 		end
 	end

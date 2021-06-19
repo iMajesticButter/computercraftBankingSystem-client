@@ -1,0 +1,23 @@
+local speaker = peripheral.find("speaker");
+
+function positiveChime()
+	speaker.playNote("bit", 3.0, 7);
+	sleep(0.1);
+	speaker.playNote("bit", 3.0, 13);
+	sleep(0.1);
+	speaker.playNote("bit", 3.0, 18);
+end
+
+function negetiveChime()
+	speaker.playNote("bit", 3.0, 10);
+	sleep(0.2);
+	speaker.playNote("bit", 3.0, 5);
+end
+
+function inputChime()
+	speaker.playNote("bit", 3.0, 24);
+end
+
+function generalChime()
+	speaker.playNote("bit", 3.0, 20);
+end
