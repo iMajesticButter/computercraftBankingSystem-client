@@ -28,48 +28,15 @@ function checkConnection()
 	s_modem.connect(address, 4);
 end
 
-local function checkForUpdates()
+-- blocking, use this from a parallel
+function checkForUpdates()
 	while true do
-		local event, modemSide, senderChannel, replyChannel, message, distance = os.pullEvent("modem_message");
+		local sender, msg = s_modem.receive(address);
 
-		if senderChannel == UPDATE_CHANNEL then
-			if type(msg) == "string" then
-				if hash.hash(msg) == UPDATE_PASSHASH then
-					shell.run("/install");
-				end
+		if type(msg) == "string" then
+			if hash.hash(msg) == UPDATE_PASSHASH then
+				shell.run("/install");
 			end
-		end
-	end
-end
-	
-local oldYield = coroutine.yield;
-local coUpdate = coroutine.create(checkForUpdates);
-
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
-function coroutine.yield(sFilter)
-	while true do
-		local event = { oldYield() };
-		if coroutine.status(coUpdate) == "suspended" then
-			if event[1] == "modem_message" then
-				coroutine.resume(coUpdate, unpack(event));
-			end
-		end
-		if sFilter == event[1] or sFilter == nil then
-			return unpack(event);
 		end
 	end
 end
