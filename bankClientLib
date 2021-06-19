@@ -95,13 +95,13 @@ function startProgram(programFunction, preventExit, updateOnExit)
 	-- we should be connected to the server now
 
 	-- program
-	while preventExit do
+	repeat
 		pcall(parallel.waitForAny, checkForUpdates, programFunction);
 		-- program ended, treat this as an update request if allow exit is false
 		if updateOnExit then
 			pcall(shell.run("/install"));
 		end
-	end
+	until not preventExit
 
 end
 
