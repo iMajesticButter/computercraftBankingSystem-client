@@ -3,10 +3,14 @@ require("bankClientLib");
 
 local NETWORK_ADDADDRESS = "NETWORK_ADDADDRESS"; -- add an address that is authorized to do ATM stuff, requires a special password
 
-connect();
+function programMain()
 
-print("Enter Admin Password: ");
+	print("Enter Admin Password: ");
 
-local pass = hash.hash(read("*"));
+	local pass = hash.hash(read("*"));
 
-addAuthAddress(pass);
+	addAuthAddress(pass);
+
+end
+
+startProgram(programMain);

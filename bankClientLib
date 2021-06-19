@@ -31,11 +31,13 @@ end
 -- blocking, use this from a parallel
 function checkForUpdates()
 	while true do
-		local sender, msg = s_modem.receive(address);
-
-		if type(msg) == "string" then
-			if hash.hash(msg) == UPDATE_PASSHASH then
-				shell.run("/install");
+		local event, modemSide, senderChannel, replyChannel, msg, distance = os.pullEvent("modem_message");
+		
+		if senderChannel == UPDATE_CHANNEL then
+			if type(msg) == "string" then
+				if hash.hash(msg) == UPDATE_PASSHASH then
+					shell.run("/install");
+				end
 			end
 		end
 	end
@@ -57,7 +59,7 @@ function genPassword()
 
 end
 
-function connect()
+function startProgram(programFunction)
 	print("connecting to server");
 	-- attemt to connect loop
 	while not connected do
@@ -80,7 +82,14 @@ function connect()
 	print("connected to server");
 	-- we should be connected to the server now
 
-	-- start update checker
+	-- program
+	parallel.waitForAny(
+		function()
+			checkForUpdates();
+		end,
+		function()
+			programFunction();
+		end)
 
 end
 

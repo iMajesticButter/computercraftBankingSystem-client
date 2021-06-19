@@ -287,42 +287,37 @@ local function loginKeycard()
 	end
 end
 
-connect();
+function programMain()
 
-if not isAuthAddr() then
-	print("This program requires bank authorization");
-	shell.run("/authAddress");
-end
+	if not isAuthAddr() then
+		print("This program requires bank authorization");
+		shell.run("/authAddress");
+	end
 
-while true do
-	-- draw main page ui
-	clearScreen();
-	print("1: create new account");
-	print("2: login to exising account with password")
+	while true do
+		-- draw main page ui
+		clearScreen();
+		print("1: create new account");
+		print("2: login to exising account with password")
 
-
-	parallel.waitForAny(
-		function()
-			local event, a1, a2 = os.pullEvent();
-			if event == "disk" then
-				if a1 == "bottom" then
-					-- attempt keycard swipe
-					loginKeycard();
-				end
-			elseif event == "key" then
-				os.pullEvent("char") -- get rid of the char event
-				if not a2 then
-					local k = keys.getName(a1);
-					if k == "one" then
-						newAccountInterface();
-					elseif k == "two" then
-						loginInterface();
-					end
+		local event, a1, a2 = os.pullEvent();
+		if event == "disk" then
+			if a1 == "bottom" then
+				-- attempt keycard swipe
+				loginKeycard();
+			end
+		elseif event == "key" then
+			os.pullEvent("char") -- get rid of the char event
+			if not a2 then
+				local k = keys.getName(a1);
+				if k == "one" then
+					newAccountInterface();
+				elseif k == "two" then
+					loginInterface();
 				end
 			end
-		end,
-		function()
-			checkForUpdates();
-		end)
-	
+		end
+	end
 end
+
+startProgram(programMain);
