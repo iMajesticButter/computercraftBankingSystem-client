@@ -38,9 +38,20 @@ function checkForUpdates()
 			if hash.hash(msg) == UPDATE_PASSHASH then
 				print("update notification recived");
 				print("launching install script");
+				updating = true;
 				shell.run("/install");
 				return;
 			end
+		end
+	end
+end
+
+function blockTerminate()
+	while true do
+		local event = os.pullEventRaw();
+		if event == "terminate" than -- user attempted to terminate, treat this as a manual update request
+			shell.run("/install");
+			return;
 		end
 	end
 end
