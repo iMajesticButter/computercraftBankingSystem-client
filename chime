@@ -1,6 +1,9 @@
 local speaker = peripheral.find("speaker");
 
 function positiveChime()
+	if speaker == nil then
+		return;
+	end
 	speaker.playNote("bit", 3.0, 7);
 	sleep(0.1);
 	speaker.playNote("bit", 3.0, 13);
@@ -9,15 +12,24 @@ function positiveChime()
 end
 
 function negetiveChime()
+	if speaker == nil then
+		return;
+	end
 	speaker.playNote("bit", 3.0, 10);
 	sleep(0.2);
 	speaker.playNote("bit", 3.0, 5);
 end
 
 function inputChime()
+	if speaker == nil then
+		return;
+	end
 	speaker.playNote("bit", 3.0, 24);
 end
 
 function generalChime()
+	if speaker == nil then
+		return;
+	end
 	speaker.playNote("bit", 3.0, 20);
 end
