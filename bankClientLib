@@ -45,7 +45,7 @@ local coUpdate = coroutine.create(checkForUpdates);
 
 function coroutine.yield(sFilter)
 	while true do
-		local event = oldYield();
+		local event = { oldYield() };
 		if coroutine.status(coUpdate) == "suspended" then
 			coroutine.resume(coUpdate, unpack(event));
 		end
