@@ -89,7 +89,7 @@ function startProgram(programFunction, preventExit, updateOnExit)
 		end)
 		
 		modem.close(RESPONSE_CHANNEL);
-		print("address recieved: " .. address);
+		print("address recieved: " .. tostring(address));
 
 		connected = s_modem.connect(address, 3);
 	end
