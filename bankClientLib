@@ -34,7 +34,7 @@ function checkForUpdates()
 		local event, modemSide, senderChannel, replyChannel, msg, distance = os.pullEvent("modem_message");
 		print("modem message");
 		print("sender: " .. senderChannel);
-		print("msg: " .. msg);
+		print("msg: " .. tostring(msg));
 
 		if senderChannel == UPDATE_CHANNEL then
 			if hash.hash(msg) == UPDATE_PASSHASH then
