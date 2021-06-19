@@ -16,7 +16,7 @@ if not fs.exists(CONFIG_FILE) then
 else
 	local file = fs.open(CONFIG_FILE, "r");
 	REDSTONE_SIDE = file.readLine();
-	REDSTONE_DURATION = file.readLine();
+	REDSTONE_DURATION = tonumber(file.readLine());
 	PRICE_TAG = file.readLine();
 	file.close();
 end
