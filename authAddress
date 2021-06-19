@@ -13,4 +13,4 @@ function programMain()
 
 end
 
-startProgram(programMain, true, false);
+startProgram(programMain, false, false);
