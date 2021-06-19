@@ -14,6 +14,7 @@ local KEYCARD_DATA_FILENAME = "/keycardData";
 local inputChest = peripheral.find("minecraft:barrel", netFilter);
 local outputChest = peripheral.find("minecraft:chest", netFilter);
 local floppyDrive = peripheral.find("drive", netFilter);
+local bankChest = peripheral.find("kibe:entangled_chest", netFilter);
 local cardSwiper = peripheral.wrap("bottom");
 
 -- floppyDrive.isDiskPresent();
@@ -189,10 +190,11 @@ local function loggedInInterface(name, password)
 				print("logged in to: " .. name);
 				print("account balance: " .. balance .. " diamonds")
 				print("1. deposit");
-				print("2. transfer");
-				print("3. print new card");
-				print("4. account history");
-				print("5. log out");
+				print("2. withdraw");
+				print("3. transfer");
+				print("4. print new card");
+				print("5. account history");
+				print("6. log out");
 
 				-- reset timer on keypresses
 				local event, key = os.pullEvent("key");
@@ -205,6 +207,39 @@ local function loggedInInterface(name, password)
 					depositeInterface(name, password);
 					timeoutTimer = timeoutTimerMax;
 				elseif k == "two" then
+					timeoutTimer = timeoutTimerMax * 8;
+					clearScreen();
+					print("how much do you with to withdraw?");
+					print("you may only withdraw a maximum of 192 diamonds at a time...");
+
+					local ammount = tonumber(read());
+					if ammount <= 192 then
+						print("withdrawing " .. ammount .. " diamonds");
+						sleep(1);
+						if withdraw(name, password, ammount) then
+
+							for slot, item in pairs(bankChest.list()) do
+								if item.name == "minecraft:diamond" then
+									dcount = dcount + item.count;
+									bankChest.pushItems(peripheral.getName(inputChest), slot);
+								end
+							end
+
+							clearScreen();
+							print("sucsess! you may retrieve your diamonds from the barrel.");
+						else
+							clearScreen();
+							print("failed to withdraw items...");
+						end
+
+					else
+						clearScreen();
+						print("you may only withdraw a maximum of 192 diamonds at a time...");
+						sleep(1);
+					end
+
+					timeoutTimer = timeoutTimerMax;
+				elseif k == "three" then
 					timeoutTimer = timeoutTimerMax * 4;
 					clearScreen();
 					print("what account would you like to transfer to?");
@@ -229,11 +264,11 @@ local function loggedInInterface(name, password)
 					end
 					sleep(1);
 
-				elseif k == "three" then
+				elseif k == "four" then
 					timeoutTimer = timeoutTimerMax * 4;
 					giveKeycard(name, password);
 					timeoutTimer = timeoutTimerMax;
-				elseif k == "four" then
+				elseif k == "five" then
 					timeoutTimer = timeoutTimerMax * 8;
 					clearScreen();
 					print(getHistory(name, password));
@@ -241,7 +276,7 @@ local function loggedInInterface(name, password)
 					os.pullEvent("key");
 					os.pullEvent("char");
 					timeoutTimer = timeoutTimerMax;
-				elseif k == "five" then
+				elseif k == "six" then
 					break;
 				end
 

@@ -25,6 +25,7 @@ local NETWORK_SERCHPRICE = "NETWORK_SERCHPRICE"; -- get a price from the price t
 local NETWORK_CAHRGPRICE = "NETWORK_CAHRGPRICE"; -- charge price
 local NETWORK_TRANSFERDI = "NETWORK_TRANSFERDI"; -- transfer diamonds to another account
 local NETWORK_GETHISTORY = "NETWORK_GETHISTORY"; -- get user account history
+local NETWORK_WITHDRAWDI = "NETWORK_WITHDRAWDI"; -- withdraw diamonds from account and storage into entangled transfer chest, max three stacks at a time
 
 function checkConnection()
 	s_modem.connect(address, 4);
@@ -271,6 +272,7 @@ function chargePrice(name, password, tag)
 	return false;
 end
 
+-- returns boolean
 function wireTransfer(name, password, toName, ammount)
 	checkConnection();
 	local dat = {};
@@ -292,6 +294,7 @@ function wireTransfer(name, password, toName, ammount)
 	return false;
 end
 
+-- returns string
 function getHistory(name, password)
 	checkConnection();
 	local dat = {};
@@ -307,4 +310,31 @@ function getHistory(name, password)
 		return msg;
 	end
 	return "Could not retrieve history";
+end
+
+-- returns boolean REQUIRES AUTH
+-- this function will NOT handle moving the items from the entangled chest to somwhere that the user can access them!!
+-- DO NOT give the user direct access to the entangled chest
+-- the system is designed to prevent users from being able to steal from the entangled chest
+-- but you never know...
+-- this function is really only used for ATMs, hence why it needs auth
+function withdraw(name, password, ammount)
+
+	checkConnection();
+	local dat = {};
+	dat.type = NETWORK_WITHDRAWDI;
+	dat.name = name;
+	dat.pass = password;
+	dat.val = ammount;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
 end
