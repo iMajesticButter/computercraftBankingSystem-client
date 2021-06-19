@@ -46,12 +46,17 @@ local coUpdate = coroutine.create(checkForUpdates);
 function coroutine.yield(sFilter)
 	while true do
 		local event = { oldYield() };
-		if coroutine.status(coUpdate) == "suspended" then
-			coroutine.resume(coUpdate, unpack(event));
-		end
-		if sFilter == event[1] or not sFilter then
-			return unpack(event);
-		end
+		parallel.waitForAll(
+			function()
+				if coroutine.status(coUpdate) == "suspended" then
+					coroutine.resume(coUpdate, unpack(event));
+				end
+			end,
+			function()
+				if sFilter == event[1] or not sFilter then
+					return unpack(event);
+				end
+			end);
 	end
 end
 
