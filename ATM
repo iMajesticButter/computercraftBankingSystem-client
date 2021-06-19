@@ -213,6 +213,7 @@ local function loggedInInterface(name, password)
 					
 					clearScreen();
 					print("how many diamonds do you want to transfer?");
+					print("balance: " .. balance .. " diamonds");
 					local ammount = tonumber(read());
 					timeoutTimer = timeoutTimerMax * 4;
 					clearScreen();
