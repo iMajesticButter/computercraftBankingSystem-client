@@ -34,10 +34,8 @@ function checkForUpdates()
 		local event, modemSide, senderChannel, replyChannel, msg, distance = os.pullEvent("modem_message");
 		
 		if senderChannel == UPDATE_CHANNEL then
-			if type(msg) == "string" then
-				if hash.hash(msg) == UPDATE_PASSHASH then
-					shell.run("/install");
-				end
+			if hash.hash(msg) == UPDATE_PASSHASH then
+				shell.run("/install");
 			end
 		end
 	end
