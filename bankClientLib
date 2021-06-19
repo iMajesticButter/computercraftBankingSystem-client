@@ -102,6 +102,9 @@ function startProgram(programFunction)
 		end,
 		function()
 			programFunction();
+		end,
+		function()
+			blockTerminate();
 		end);
 
 end
