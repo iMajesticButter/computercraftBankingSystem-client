@@ -43,11 +43,27 @@ end
 local oldYield = coroutine.yield;
 local coUpdate = coroutine.create(checkForUpdates);
 
+function deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
 function coroutine.yield(sFilter)
 	while true do
 		local event = { oldYield() };
+		local event2 = deepcopy(event);
 		if coroutine.status(coUpdate) == "suspended" then
-			coroutine.resume(coUpdate, unpack(event));
+			coroutine.resume(coUpdate, unpack(event2));
 		end
 		if sFilter == event[1] or not sFilter then
 			return unpack(event);
