@@ -1,5 +1,4 @@
 require("bankClientLib");
-os.loadAPI("hash");
 -- change these variables to match peripheral names for this atm
 
 -- make sure we are connecting over the motem so we can transfer items

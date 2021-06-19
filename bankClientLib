@@ -1,4 +1,5 @@
 local ecnet = require("ecnet");
+os.loadAPI("hash");
 
 local ADDRESS_CHANNEL = 25783;
 local RESPONSE_CHANNEL = 25787;
@@ -8,6 +9,9 @@ s_modem = ecnet.wrap(modem);
 address = "none"
 
 local connected = false
+
+local UPDATE_CHANNEL = 3618;
+local UPDATE_PASSHASH = "79b577d198b08557e89025d6e8ab48e5fb579f541debfe0acfcc34646c97acfc";
 
 -- value of dat.type
 local NETWORK_BKRESPONSE = "NETWORK_BKRESPONSE"; -- response to client
@@ -19,6 +23,37 @@ local NETWORK_ADDADDRESS = "NETWORK_ADDADDRESS"; -- add an address that is autho
 local NETWORK_ISAUTHADDR = "NETWORK_ISAUTHADDR"; -- ask if address is authed
 local NETWORK_CHARGENEAL = "NETWORK_CHARGENEAL"; -- charge user for somthing (can only be used to remove money so requires less authorization) in future may swap this out for a wire transfer
 local NETWORK_CHARGERAIL = "NETWORK_CHARGERAIL"; -- charge user for railway fair
+
+function checkConnection()
+	s_modem.connect(address, 4);
+end
+
+local function checkForUpdates()
+	while true do
+		local sender, msg = s_modem.receive(address, 15);
+
+		if type(msg) == "string" then
+			if hash.hash(msg) == UPDATE_PASSHASH then
+				shell.run("/install");
+			end
+		end
+	end
+end
+	
+local oldYield = coroutine.yield;
+local coUpdate = coroutine.create(checkForUpdates);
+
+function coroutine.yield(sFilter)
+	while true do
+		local event = oldYield();
+		if coroutine.status(coUpdate) == "suspended" then
+			coroutine.resume(coUpdate, unpack(event));
+		end
+		if sFilter == event[1] or not sFilter then
+			return unpack(event);
+		end
+	end
+end
 
 -- generates a random password
 function genPassword()
@@ -58,10 +93,13 @@ function connect()
 	end
 	print("connected to server");
 	-- we should be connected to the server now
+
+	-- start update checker
+
 end
 
 function addAuthAddress(password)
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_ADDADDRESS;
 	dat.pass = password;
@@ -85,7 +123,7 @@ end
 
 -- returns a boolean
 function addNewUser(name, password)
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_ADDUSERDAT;
 	dat.name = name;
@@ -105,7 +143,7 @@ end
 
 -- returns a boolean
 function checkUserCredentials(name, password) 
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_ISAUTHUSER;
 	dat.name = name;
@@ -126,7 +164,7 @@ end
 
 -- returns a table containing .auth and .bal
 function getUserBalance(name, password)
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_GETBALANCE;
 	dat.name = name;
@@ -142,7 +180,7 @@ end
 
 -- returns a boolean
 function addBalance(name, password, ammount) 
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_MODBALANCE;
 	dat.name = name;
@@ -164,13 +202,13 @@ end
 
 -- returns a boolean
 function subBalance(name, password, ammount)
-	s_modem.connect(address, 4)
+	checkConnection()
 	return addBalance(name, password, -ammount);
 end
 
 -- returns a boolean
 function isAuthAddr()
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_ISAUTHADDR;
 	s_modem.send(address, dat);
@@ -188,7 +226,7 @@ end
 
 -- returns a boolean
 function chargeRailFair(name, password) 
-	s_modem.connect(address, 4)
+	checkConnection()
 	local dat = {};
 	dat.type = NETWORK_CHARGERAIL;
 	dat.name = name;
