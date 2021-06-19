@@ -233,13 +233,13 @@ local function login(name, password)
 	if checkUserCredentials(name, password) then
 		print("Login sucsessfull!");
 		sleep(0.5);
-		term.clear();
+		clearScreen();
 		loggedInInterface(name, password);
 	else
 		print("Login failed: bad credentials!");
 		s_modem.connect(address, 4);
 		sleep(0.5);
-		term.clear();
+		clearScreen();
 		return;
 	end
 
