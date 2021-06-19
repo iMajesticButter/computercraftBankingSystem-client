@@ -389,13 +389,14 @@ function programMain()
 		print("2: login to exising account with password")
 
 		local event, a1, a2 = os.pullEvent();
-		generalChime()
 		if event == "disk" then
+			generalChime()
 			if a1 == "bottom" then
 				-- attempt keycard swipe
 				loginKeycard();
 			end
 		elseif event == "key" then
+			generalChime()
 			os.pullEvent("char") -- get rid of the char event
 			if not a2 then
 				local k = keys.getName(a1);
