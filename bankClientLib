@@ -30,14 +30,14 @@ end
 
 -- blocking, use this from a parallel
 function checkForUpdates()
+	modem.open(UPDATE_CHANNEL);
 	while true do
 		local event, modemSide, senderChannel, replyChannel, msg, distance = os.pullEvent("modem_message");
-		print("modem message");
-		print("sender: " .. senderChannel);
-		print("msg: " .. tostring(msg));
 
 		if senderChannel == UPDATE_CHANNEL then
 			if hash.hash(msg) == UPDATE_PASSHASH then
+				print("update notification recived");
+				print("launching install script");
 				shell.run("/install");
 				return;
 			end
@@ -91,7 +91,7 @@ function startProgram(programFunction)
 		end,
 		function()
 			programFunction();
-		end)
+		end);
 
 end
 
