@@ -63,6 +63,7 @@ end
 function coroutine.yield(sFilter)
 	while true do
 		local event = { oldYield() };
+		print(event[1]);
 		local event2 = deepcopy(event);
 		if coroutine.status(coUpdate) == "suspended" then
 			coroutine.resume(coUpdate, unpack(event2));
