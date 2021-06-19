@@ -22,8 +22,8 @@ local cardSwiper = peripheral.wrap("bottom");
 -- floppyDrive.getMountPath();
 
 local function clearScreen()
-	term.clear();
-	term.setCursorPos(1, 1);
+	--term.clear();
+	--term.setCursorPos(1, 1);
 end
 
 local function giveKeycard(name, password)
