@@ -211,7 +211,7 @@ local function loggedInInterface(name, password)
 					clearScreen();
 					print("how much do you with to withdraw?");
 					print("you may only withdraw a maximum of 192 diamonds at a time...");
-					print("your current balance is: " .. balance " diamonds");
+					print("your current balance is: " .. balance .. " diamonds");
 
 					local ammount = tonumber(read());
 					if ammount <= 192 then
