@@ -320,4 +320,4 @@ function programMain()
 	end
 end
 
-startProgram(programMain);
+startProgram(programMain, true, true);
