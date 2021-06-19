@@ -383,6 +383,8 @@ function programMain()
 		shell.run("/authAddress");
 	end
 
+	positiveChime();
+
 	while true do
 		-- draw main page ui
 		clearScreen();
