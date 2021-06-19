@@ -46,16 +46,6 @@ function checkForUpdates()
 	end
 end
 
-function blockTerminate()
-	while true do
-		local event = os.pullEventRaw();
-		if event == "terminate" then -- user attempted to terminate, treat this as a manual update request
-			shell.run("/install");
-			return;
-		end
-	end
-end
-
 -- generates a random password
 function genPassword()
 
@@ -72,7 +62,7 @@ function genPassword()
 
 end
 
-function startProgram(programFunction)
+function startProgram(programFunction, allowExit)
 	print("connecting to server");
 	-- attemt to connect loop
 	while not connected do
@@ -96,17 +86,11 @@ function startProgram(programFunction)
 	-- we should be connected to the server now
 
 	-- program
-	pcall(parallel.waitForAny, blockTerminate, checkForUpdates, programFunction);
-	--parallel.waitForAny(
-	--	function()
-	--		blockTerminate();
-	--	end,
-	--	function()
-	--		checkForUpdates();
-	--	end,
-	--	function()
-	--		programFunction();
-	--	end);
+	pcall(parallel.waitForAny, checkForUpdates, programFunction);
+	-- program ended, treat this as an update request if allow exit is false
+	if not allowExit then
+		shell.run("/install");
+	end
 
 end
 
