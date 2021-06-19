@@ -232,6 +232,8 @@ local function loggedInInterface(name, password)
 							print("failed to withdraw items...");
 						end
 
+						sleep(1);
+
 					else
 						clearScreen();
 						print("you may only withdraw a maximum of 192 diamonds at a time...");

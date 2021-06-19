@@ -99,7 +99,6 @@ function startProgram(programFunction, preventExit, updateOnExit)
 
 	-- program
 	repeat
-		programFunction();
 		pcall(parallel.waitForAny, checkForUpdates, programFunction);
 		-- program ended, treat this as an update request if allow exit is false
 		if updateOnExit then
