@@ -30,7 +30,7 @@ end
 
 local function checkForUpdates()
 	while true do
-		local sender, msg = s_modem.receive(address, 15);
+		local sender, msg = s_modem.receive(address);
 
 		if type(msg) == "string" then
 			if hash.hash(msg) == UPDATE_PASSHASH then
