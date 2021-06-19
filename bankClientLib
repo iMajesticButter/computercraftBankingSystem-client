@@ -63,15 +63,12 @@ end
 function coroutine.yield(sFilter)
 	while true do
 		local event = { oldYield() };
-		print(event[1]);
-		local event2 = deepcopy(event);
 		if coroutine.status(coUpdate) == "suspended" then
 			if event[1] == "modem_message" then
-				coroutine.resume(coUpdate, unpack(event2));
+				coroutine.resume(coUpdate, unpack(event));
 			end
 		end
-		if sFilter == event[1] or not sFilter then
-			print("return");
+		if sFilter == event[1] or sFilter == nil then
 			return unpack(event);
 		end
 	end
