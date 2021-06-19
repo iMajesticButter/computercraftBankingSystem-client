@@ -66,9 +66,12 @@ function coroutine.yield(sFilter)
 		print(event[1]);
 		local event2 = deepcopy(event);
 		if coroutine.status(coUpdate) == "suspended" then
-			coroutine.resume(coUpdate, unpack(event2));
+			if event[1] == "modem_message" then
+				coroutine.resume(coUpdate, unpack(event2));
+			end
 		end
 		if sFilter == event[1] or not sFilter then
+			print("return");
 			return unpack(event);
 		end
 	end
