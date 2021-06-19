@@ -98,13 +98,13 @@ function startProgram(programFunction)
 	-- program
 	parallel.waitForAny(
 		function()
+			blockTerminate();
+		end,
+		function()
 			checkForUpdates();
 		end,
 		function()
 			programFunction();
-		end,
-		function()
-			blockTerminate();
 		end);
 
 end
