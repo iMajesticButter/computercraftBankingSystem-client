@@ -49,7 +49,7 @@ end
 function blockTerminate()
 	while true do
 		local event = os.pullEventRaw();
-		if event == "terminate" than -- user attempted to terminate, treat this as a manual update request
+		if event == "terminate" then -- user attempted to terminate, treat this as a manual update request
 			shell.run("/install");
 			return;
 		end
