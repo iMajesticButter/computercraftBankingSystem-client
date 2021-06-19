@@ -217,11 +217,10 @@ local function loggedInInterface(name, password)
 						print("withdrawing " .. ammount .. " diamonds");
 						sleep(1);
 						if withdraw(name, password, ammount) then
-
-							for slot, item in pairs(bankChest.list()) do
+							sleep(3) -- give the thing some time to make sure diamonds are where they are supposed to be
+							for s, item in pairs(bankChest.list()) do
 								if item.name == "minecraft:diamond" then
-									dcount = dcount + item.count;
-									bankChest.pushItems(peripheral.getName(inputChest), slot);
+									bankChest.pushItems(peripheral.getName(inputChest), s);
 								end
 							end
 
