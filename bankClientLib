@@ -21,8 +21,10 @@ local NETWORK_GETBALANCE = "NETWORK_GETBALANCE"; -- gets users balance, requires
 local NETWORK_MODBALANCE = "NETWORK_MODBALANCE"; -- adds/subtracts from users balance, requires auth
 local NETWORK_ADDADDRESS = "NETWORK_ADDADDRESS"; -- add an address that is authorized to do ATM stuff, requires a special password
 local NETWORK_ISAUTHADDR = "NETWORK_ISAUTHADDR"; -- ask if address is authed
-local NETWORK_CHARGENEAL = "NETWORK_CHARGENEAL"; -- charge user for somthing (can only be used to remove money so requires less authorization) in future may swap this out for a wire transfer
-local NETWORK_CHARGERAIL = "NETWORK_CHARGERAIL"; -- charge user for railway fair
+local NETWORK_SERCHPRICE = "NETWORK_SERCHPRICE"; -- get a price from the price table
+local NETWORK_CAHRGPRICE = "NETWORK_CAHRGPRICE"; -- charge price
+local NETWORK_TRANSFERDI = "NETWORK_TRANSFERDI"; -- transfer diamonds to another account
+local NETWORK_GETHISTORY = "NETWORK_GETHISTORY"; -- get user account history
 
 function checkConnection()
 	s_modem.connect(address, 4);
@@ -231,13 +233,31 @@ function isAuthAddr()
 	return false;
 end
 
--- returns a boolean
-function chargeRailFair(name, password) 
-	checkConnection()
+-- returns price
+function getPrice(tag)
+	checkConnection();
 	local dat = {};
-	dat.type = NETWORK_CHARGERAIL;
+	dat.type = NETWORK_SERCHPRICE;
+	dat.tag = tag;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		return msg;
+	end
+	return 100000;
+end
+
+-- returns boolean
+function chargePrice(name, password, tag)
+	checkConnection();
+	local dat = {};
+	dat.type = NETWORK_CAHRGPRICE;
 	dat.name = name;
 	dat.pass = password;
+	dat.tag = tag;
 	s_modem.send(address, dat);
 
 	local sender, msg = s_modem.receive(address, 15);
@@ -249,6 +269,42 @@ function chargeRailFair(name, password)
 		end
 	end
 	return false;
-
 end
 
+function wireTransfer(name, password, toName, ammount)
+	checkConnection();
+	local dat = {};
+	dat.type = NETWORK_TRANSFERDI;
+	dat.name = name;
+	dat.pass = password;
+	dat.to = toName;
+	dat.val = ammount;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 15);
+	if msg == nil then
+		print("timed out");
+	else
+		if type(msg == "boolean") then
+			return msg;
+		end
+	end
+	return false;
+end
+
+function getHistory(name, password)
+	checkConnection();
+	local dat = {};
+	dat.type = NETWORK_GETHISTORY;
+	dat.name = name;
+	dat.pass = password;
+	s_modem.send(address, dat);
+
+	local sender, msg = s_modem.receive(address, 60); -- could be a large packet, may take some time
+	if msg == nil then
+		print("timed out");
+	else
+		return msg;
+	end
+	return "Could not retrieve history";
+end
