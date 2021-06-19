@@ -27,6 +27,7 @@ local function clearScreen()
 end
 
 local function giveKeycard(name, password)
+	clearScreen();
 	if not floppyDrive.isDiskPresent() then
 		print("ERROR: Out of floppy drives!");
 		sleep(10);
